@@ -1,0 +1,1630 @@
+net-snmp-create-v3-user
+
+
+director-1-1-a:/etc/snmp # net-snmp-create-v3-user
+Enter a SNMPv3 user name to create: 
+service
+Enter authentication pass-phrase: 
+Mi@Dim7T
+Enter encryption pass-phrase: 
+  [press return to reuse the authentication pass-phrase]
+
+adding the following line to /var/lib/net-snmp/snmpd.conf:
+   createUser service MD5 "Mi@Dim7T" DES
+adding the following line to /etc/snmp/snmpd.conf:
+   rwuser service
+director-1-1-a:/etc/snmp # ^C
+
+
+
+   
+   
+sudo systemctl start snmpd
+sudo systemctl enable snmpd
+
+
+sudo firewall-cmd --add-port=161/udp --permanent
+sudo firewall-cmd --reload
+
+To test:
+
+
+director-1-1-a:/etc/snmp # net-snmp-create-v3-user -ro -a Mi@Dim7T -x Mi@Dim7T -a SHA -X AES service
+adding the following line to /var/lib/net-snmp/snmpd.conf:
+   createUser service SHA "Mi@Dim7T" AES "Mi@Dim7T"
+adding the following line to /etc/snmp/snmpd.conf:
+   rouser service
+director-1-1-a:/etc/snmp # vi snmpd.conf
+
+
+
+To Test: 
+
+director-1-1-a:/home/service # snmpget -v3 -u service -l authPriv -a SHA -A Mi@Dim7T -x AES -X Mi@Dim7T 10.226.102.101 sysDescr.0
+SNMPv2-MIB::sysDescr.0 = STRING: Linux director-1-1-a 5.3.18-150300.59.144-default #1 SMP Tue Dec 5 15:20:50 UTC 2023 (5dc33fd) x86_64
+director-1-1-a:/home/service # snmpwalk -v3 -u service -l authPriv -a SHA -A Mi@Dim7T -x AES -X Mi@Dim7T 10.226.102.101 system
+
+>>>>
+
+>>>
+
+gopinath.palanisami@vpx-gopi-u22:/export/Monorepo/17_SEPT_SNMP/vplex$ make -C snmp build rpm
+
+>>>>
+
+# Enable all logging levels
+debug all
+
+# Log to standard output (console)
+logOption Syslog=yes,stdout
+
+createUser service SHA "Mi@Dim7T" AES "Mi@Dim7T"
+rouser service authPriv
+dlmod vplexStats /opt/emc/VPlex/snmp-lib/vplexStats.so
+
+>>>>
+sudo journalctl -u snmpd -f
+sudo journalctl -u snmpd -n 100
+sudo journalctl -u snmpd
+>>>>
+To check why snmp service not working,
+
+sudo snmpd -f -Lo
+
+director-1-1-a:/etc/snmp # sudo snmpd -f -Lo
+/etc/snmp/snmpd.conf: line 16: Warning: Unknown token: debug.
+/etc/snmp/snmpd.conf: line 19: Warning: Unknown token: logOption.
+09/18/24 02:27:27 : INFO init_vplexStats BEGIN
+09/18/24 02:27:27 : INFO in init()
+09/18/24 02:27:27 : ERROR XML file error: [Message]:cannot open file [Filename]:/etc/snmp/VplexSnmpPerfConfig.xml [Line Number]:0 error in xml file 
+09/18/24 02:27:27 : INFO exiting out of initdirector-1-1-a:/etc/snmp # ^C
+director-1-1-a:/etc/snmp # ^C
+
+>>>>
+
+/etc/snmp/VplexSnmpPerfConfig.xml
+
+>>>>
+
+SNMP agent related files on a management server are found at below locations.
+
+MIB file: /opt/emc/VPlex/mibs/VPLEX-MIB.mib
+VPlex Performance SNMP Agent Library: /opt/emc/VPlex/snmp-lib/vplexStats.so
+SNMP Agent Log File: /var/log/net-snmpd.log
+SNMP Agent Configuration Files: /etc/snmp/VplexSnmpPerfConfig.xml, /usr/share/snmp/snmpd.conf, /var/lib/net-snmp/snmpd.conf and /etc/snmp/snmpd.conf
+
+>>>>
+
+dlmod vplexStats /opt/emc/VPlex/snmp-lib/vplexStats.so
+ 
+
+>>>>
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<vplex_snmp_agent_config>
+	<agent_config>
+		<tower_port>62000</tower_port>
+		<tower_protocol>tcp</tower_protocol>
+		<include_remote_directors>0</include_remote_directors>
+	</agent_config>
+	<directors>
+		<director>
+			<hostname>128.221.250.36</hostname>
+			<failoverhost>128.221.251.36</failoverhost>
+			<name>director-1-1-B</name>
+			<local>1</local>
+			<ports>
+				<port>
+					<name>EC-01</name>
+					<role>public</role>
+				</port>
+				<port>
+					<name>IO-00</name>
+					<role>front-end</role>
+				</port>
+				<port>
+					<name>MC-00</name>
+					<role>management</role>
+				</port>
+				<port>
+					<name>MC-01</name>
+					<role>management</role>
+				</port>
+				<port>
+					<name>IO-01</name>
+					<role>front-end</role>
+				</port>
+				<port>
+					<name>LC-00</name>
+					<role>local-com</role>
+				</port>
+				<port>
+					<name>LC-01</name>
+					<role>local-com</role>
+				</port>
+				<port>
+					<name>IO-02</name>
+					<role>back-end</role>
+				</port>
+				<port>
+					<name>IO-03</name>
+					<role>back-end</role>
+				</port>
+			</ports>
+		</director>
+		<director>
+			<hostname>128.221.250.35</hostname>
+			<failoverhost>128.221.251.35</failoverhost>
+			<name>director-1-1-A</name>
+			<local>1</local>
+			<ports>
+				<port>
+					<name>EC-01</name>
+					<role>public</role>
+				</port>
+				<port>
+					<name>IO-00</name>
+					<role>front-end</role>
+				</port>
+				<port>
+					<name>MC-00</name>
+					<role>management</role>
+				</port>
+				<port>
+					<name>MC-01</name>
+					<role>management</role>
+				</port>
+				<port>
+					<name>IO-01</name>
+					<role>front-end</role>
+				</port>
+				<port>
+					<name>LC-00</name>
+					<role>local-com</role>
+				</port>
+				<port>
+					<name>LC-01</name>
+					<role>local-com</role>
+				</port>
+				<port>
+					<name>IO-02</name>
+					<role>back-end</role>
+				</port>
+				<port>
+					<name>IO-03</name>
+					<role>back-end</role>
+				</port>
+			</ports>
+		</director>
+
+	</directors>
+	<virtual-volumes></virtual-volumes>
+</vplex_snmp_agent_config>
+
+>>>>>>>>>>>>>>>
+
+<?xml version="1.0" encoding="utf-8"?><vplex_snmp_agent_config><agent_config><tower_port>62000</tower_port><tower_protocol>tcp</tower_protocol><include_remote_directors>0</include_remote_directors></agent_config><directors><director><hostname>128.221.252.37</hostname><failoverhost>128.221.253.37</failoverhost><name>director-1-2-A</name><local>1</local><ports><port><name>A1-FC01</name><role>back-end</role></port><port><name>A3-FC00</name><role>local-com</role></port><port><name>A-CMI00</name><role></role></port><port><name>A3-FC01</name><role>local-com</role></port><port><name>A2-FC02</name><role>wan-com</role></port><port><name>A0-FC03</name><role>front-end</role></port><port><name>A1-FC00</name><role>back-end</role></port><port><name>A0-FC02</name><role>front-end</role></port><port><name>A0-FC00</name><role>front-end</role></port><port><name>A0-FC01</name><role>front-end</role></port><port><name>A1-FC03</name><role>back-end</role></port><port><name>A2-FC00</name><role>wan-com</role></port><port><name>A2-FC01</name><role>wan-com</role></port><port><name>A3-FC02</name><role></role></port><port><name>A3-FC03</name><role></role></port><port><name>A1-FC02</name><role>back-end</role></port><port><name>A2-FC03</name><role>wan-com</role></port></ports></director><director><hostname>128.221.252.36</hostname><failoverhost>128.221.253.36</failoverhost><name>director-1-1-B</name><local>1</local><ports><port><name>B3-FC03</name><role></role></port><port><name>B1-FC03</name><role>back-end</role></port><port><name>B3-FC02</name><role></role></port><port><name>B2-FC03</name><role>wan-com</role></port><port><name>B0-FC03</name><role>front-end</role></port><port><name>B-CMI00</name><role></role></port><port><name>B2-FC00</name><role>wan-com</role></port><port><name>B0-FC00</name><role>front-end</role></port><port><name>B3-FC01</name><role>local-com</role></port><port><name>B0-FC02</name><role>front-end</role></port><port><name>B0-FC01</name><role>front-end</role></port><port><name>B1-FC00</name><role>back-end</role></port><port><name>B1-FC02</name><role>back-end</role></port><port><name>B2-FC01</name><role>wan-com</role></port><port><name>B1-FC01</name><role>back-end</role></port><port><name>B2-FC02</name><role>wan-com</role></port><port><name>B3-FC00</name><role>local-com</role></port></ports></director><director><hostname>128.221.252.35</hostname><failoverhost>128.221.253.35</failoverhost><name>director-1-1-A</name><local>1</local><ports><port><name>A-CMI00</name><role></role></port><port><name>A2-FC01</name><role>wan-com</role></port><port><name>A0-FC02</name><role>front-end</role></port><port><name>A3-FC02</name><role></role></port><port><name>A0-FC03</name><role>front-end</role></port><port><name>A3-FC01</name><role>local-com</role></port><port><name>A3-FC00</name><role>local-com</role></port><port><name>A1-FC02</name><role>back-end</role></port><port><name>A2-FC02</name><role>wan-com</role></port><port><name>A1-FC00</name><role>back-end</role></port><port><name>A0-FC01</name><role>front-end</role></port><port><name>A1-FC01</name><role>back-end</role></port><port><name>A2-FC03</name><role>wan-com</role></port><port><name>A2-FC00</name><role>wan-com</role></port><port><name>A0-FC00</name><role>front-end</role></port><port><name>A1-FC03</name><role>back-end</role></port><port><name>A3-FC03</name><role></role></port></ports></director><director><hostname>128.221.252.68</hostname><failoverhost>128.221.253.68</failoverhost><name>director-2-1-B</name><local>0</local><ports><port><name>B-CMI00</name><role></role></port><port><name>B0-FC02</name><role>front-end</role></port><port><name>B0-FC01</name><role>front-end</role></port><port><name>B2-FC03</name><role>wan-com</role></port><port><name>B3-FC01</name><role>local-com</role></port><port><name>B3-FC00</name><role>local-com</role></port><port><name>B2-FC01</name><role>wan-com</role></port><port><name>B3-FC02</name><role></role></port><port><name>B0-FC00</name><role>front-end</role></port><port><name>B3-FC03</name><role></role></port><port><name>B0-FC03</name><role>front-end</role></port><port><name>B1-FC02</name><role>back-end</role></port><port><name>B2-FC00</name><role>wan-com</role></port><port><name>B1-FC03</name><role>back-end</role></port><port><name>B1-FC00</name><role>back-end</role></port><port><name>B1-FC01</name><role>back-end</role></port><port><name>B2-FC02</name><role>wan-com</role></port></ports></director><director><hostname>128.221.252.38</hostname><failoverhost>128.221.253.38</failoverhost><name>director-1-2-B</name><local>1</local><ports><port><name>B1-FC02</name><role>back-end</role></port><port><name>B3-FC03</name><role></role></port><port><name>B0-FC03</name><role>front-end</role></port><port><name>B2-FC00</name><role>wan-com</role></port><port><name>B1-FC01</name><role>back-end</role></port><port><name>B0-FC02</name><role>front-end</role></port><port><name>B0-FC01</name><role>front-end</role></port><port><name>B-CMI00</name><role></role></port><port><name>B2-FC02</name><role>wan-com</role></port><port><name>B2-FC03</name><role>wan-com</role></port><port><name>B3-FC01</name><role>local-com</role></port><port><name>B0-FC00</name><role>front-end</role></port><port><name>B1-FC03</name><role>back-end</role></port><port><name>B1-FC00</name><role>back-end</role></port><port><name>B2-FC01</name><role>wan-com</role></port><port><name>B3-FC02</name><role></role></port><port><name>B3-FC00</name><role>local-com</role></port></ports></director><director><hostname>128.221.252.70</hostname><failoverhost>128.221.253.70</failoverhost><name>director-2-2-B</name><local>0</local><ports><port><name>B3-FC01</name><role>local-com</role></port><port><name>B3-FC02</name><role></role></port><port><name>B3-FC00</name><role>local-com</role></port><port><name>B1-FC02</name><role>back-end</role></port><port><name>B2-FC01</name><role>wan-com</role></port><port><name>B2-FC03</name><role>wan-com</role></port><port><name>B0-FC03</name><role>front-end</role></port><port><name>B3-FC03</name><role></role></port><port><name>B2-FC00</name><role>wan-com</role></port><port><name>B1-FC00</name><role>back-end</role></port><port><name>B2-FC02</name><role>wan-com</role></port><port><name>B0-FC02</name><role>front-end</role></port><port><name>B0-FC00</name><role>front-end</role></port><port><name>B0-FC01</name><role>front-end</role></port><port><name>B-CMI00</name><role></role></port><port><name>B1-FC03</name><role>back-end</role></port><port><name>B1-FC01</name><role>back-end</role></port></ports></director><director><hostname>128.221.252.67</hostname><failoverhost>128.221.253.67</failoverhost><name>director-2-1-A</name><local>0</local><ports><port><name>A3-FC02</name><role></role></port><port><name>A3-FC00</name><role>local-com</role></port><port><name>A2-FC00</name><role>wan-com</role></port><port><name>A0-FC02</name><role>front-end</role></port><port><name>A3-FC03</name><role></role></port><port><name>A3-FC01</name><role>local-com</role></port><port><name>A1-FC01</name><role>back-end</role></port><port><name>A0-FC03</name><role>front-end</role></port><port><name>A-CMI00</name><role></role></port><port><name>A0-FC01</name><role>front-end</role></port><port><name>A1-FC00</name><role>back-end</role></port><port><name>A0-FC00</name><role>front-end</role></port><port><nam
+
+>>>>>>>>>>>>>>>
+
+
+
+director-1-1-a:/etc/snmp # sudo lsof -i :7890
+COMMAND   PID USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
+snmpd   16628 root    8u  IPv4 70689673      0t0  TCP *:7890 (LISTEN)
+
+>>>>
+
+
+
+
+director-1-1-a:/etc/snmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.1.1.3 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.250.35 = STRING: "director-1-1-A"
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.250.36 = STRING: "director-1-1-B"
+Error in packet.
+Reason: (genError) A general failure occured
+Failed object: SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.250.36
+
+>>>>>>>>>
+
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.103  1.3.6.1.4.1.1139.21.2.2.3.1.1 -v3
+
+
+Connection from UDP: [10.226.102.101]:43191->[10.226.102.101]:161                   
+09/19/24 01:44:45 : DEBUG IOSTAT fetch from cache (128.221.250.35)                  
+09/19/24 01:44:45 : ERROR Failed to retreive stat:: VPLEXDIRECTORCPUIDLE Status Code 4Connection from UDP: [10.226.102.101]:43191->[10.226.102.101]:161                   
+09/19/24 01:44:48 : INFO mod time 1726636440                                        
+09/19/24 01:44:49 : DEBUG  threadGetDirectorStats entering for 128.221.250.35       
+09/19/24 01:44:49 : DEBUG IOSTAT fetch from cache (128.221.250.35)                  
+09/19/24 01:44:49 : DEBUG  attribute is fe_read_avglat_attribute                    
+09/19/24 01:44:49 : DEBUG  threadGetDirectorStats entering for 128.221.250.35       
+09/19/24 01:44:49 : DEBUG IOSTAT fetch from cache (128.221.250.35)                  
+09/19/24 01:44:49 : DEBUG  attribute is fe_write_avglat_attribute             
+
+
+
+SNMP_V#/vplex/snmp/vplexstats/Vplexstats.cpp INFO init_vplexStats BEGIN
+
+	vplexDirectorHeapUsed Integer32 }
+
+1.3.6.1.4.1.1139.21.2.2.2.1.1
+
+
+Connection from UDP: [10.226.102.101]:44406->[10.226.102.101]:161
+09/19/24 01:58:06 : DEBUG IOSTAT fetch from cache (128.221.250.35)
+09/19/24 01:58:06 : ERROR Failed to retreive stat:: VPLEXDIRECTORHEAPUSED Status Code 4
+Connection from UDP: [10.226.102.101]:44406->[10.226.102.101]:161
+09/19/24 01:58:08 : INFO mod time 1726636440
+09/19/24 01:58:09 : DEBUG  threadGetDirectorStats entering for 128.221.250.35
+09/19/24 01:58:09 : DEBUG IOSTAT fetch from cache (128.221.250.35)
+
+>>>>>>>>>>>>>>>>>
+
+/export/Monorepo/17_SEPT_SNMP/vplex/snmp/vplexstats/Vplexstats.cpp
+switch (table_info->colnum)
+                {
+                    case COLUMN_VPLEXDIRECTORHEAPUSED:
+                        String sRetVal="";
+                        long retCode = getStatValue(reginfo, table_info,
+                                                    table_entry->vplexDirectorPrimaryIpAddr,
+                                                    "", sRetVal);
+
+                        if (retCode != STATUS_OK)
+                        {
+                            LOG(LOG_ERR,"Failed to retreive stat:: VPLEXDIRECTORHEAPUSED Status Code %d\n",retCode); >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Failed to retreive stat:: VPLEXDIRECTORHEAPUSED Status Code 4
+                            netsnmp_set_request_error(reqinfo, request,SNMP_ERR_GENERR);
+                        }
+                        else
+                        {
+                            table_entry->vplexDirectorHeapUsed = strtoul(sRetVal.c_str(),NULL,0);
+                            snmp_set_var_typed_integer( request->requestvb, ASN_INTEGER,
+                                                        table_entry->vplexDirectorHeapUsed);
+                        }
+                        break;
+                }
+            }
+
+
+>>>>>>>>>>>>>>
+
+This not going to this line >>>>>>>>>
+
+        if (m_iostatListener->acceptConnection(*newConnection)) {
+            LOG(LOG_INFO, "%s: accepted a new connection\n", __FUNCTION__);
+            pthread_create(&handlerThread, NULL,
+                           CLIPerpMonStrategy::handleConnection, newConnection);
+        } else {
+            delete(newConnection);
+            LOG(LOG_INFO, "accept failed or timed out\n");
+        }
+		
+		
+>>>>>>>>
+
+Not enter into handleConnection >>>>>>>>>>>
+ pthread_create(&handlerThread, NULL,
+                           CLIPerpMonStrategy::handleConnection, newConnection);
+
+
+>>>>>>>>
+
+int SysCall::osAccept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+{
+    return  accept(sockfd,addr,addrlen);
+}
+
+>>>
+
+
+
+ LOG(LOG_INFO, "m_listenForNewIOStat = %s\n", m_listenForNewIOStat ? "true" : "false");
+    while (m_listenForNewIOStat)
+    {
+        pthread_t handlerThread;
+        Socket *newConnection = new Socket();
+        newConnection->recvWait(IO_WAIT_DURATION_MSEC);
+        newConnection->sendWait(IO_WAIT_DURATION_MSEC);
+        LOG(LOG_INFO, "%s: got a new connection\n", __FUNCTION__);
+   
+
+
+/24 09:02:26 : INFO iostatListenerThread: START
+09/20/24 09:02:26 : INFO m_listenForNewIOStat = true
+09/20/24 09:02:26 : DEBUG In IOSTAT ADD/Sub iostat add 0 09/20/24 09:02:26 : INFO iostatListenerThread: got a new connection  >>>>>>>>>>>>>>>>>>>>>
+09/20/24 09:02:26 : DEBUG In IOSTAT Add/Sub host 128.221.250.35, Command iostat add 0 node heap-used   
+>>>   
+
+
+m_iostatListener->acceptConnection(*newConnection)) {
+
+Codeium
+9:24 pm, Sep 20, 2024
+The code snippet you provided is checking if the acceptConnection method of the m_iostatListener object returns true. This method is called on the m_iostatListener object and takes *newConnection as an argument.
+
+The acceptConnection method is likely defined in the TcpServer class, which is a base class of m_iostatListener. It is responsible for accepting a new connection on the server.
+
+If the acceptConnection method returns true, it means that a new connection has been successfully accepted. In this case, a new thread is created to handle the connection using the pthread_create function.
+
+If the acceptConnection method returns false, it means that the connection attempt failed or timed out. In this case, the newConnection object is deleted.
+
+Let me know if you need further clarification or if there's anything else I can help you with!
+
+
+???
+
+
+
+TcpServer class is defined in the file Socket.cpp.
+
+
+
+
+bool TcpServer::acceptConnection(Socket &newConnection)
+{
+    return Socket::accept(newConnection); >>>>>>>>>>>>>>>>>>>>>> Socket Accept 
+}
+
+This code snippet defines a member function named acceptConnection in the TcpServer class. It takes a reference to a Socket object as a parameter. 
+The function calls the accept function of the Socket class and returns the result.
+
+bool Socket::accept (Socket &newSocket) const
+{
+    SysCall *sc = SysCall::getInstance();
+    int addr_length = sizeof(m_addr);
+    newSocket.m_sockfd = sc->osAccept(m_sockfd, (sockaddr *)&m_addr, (socklen_t *)&addr_length); >>>>>>>>>>>>>>>>>>>> 
+    return (newSocket.m_sockfd >= 0);
+}
+
+
+
+bool Socket::accept (Socket &newSocket) const
+{
+    SysCall *sc = SysCall::getInstance();
+    int addr_length = sizeof(m_addr);
+    LOG(LOG_DEBUG, "Accepting on socket %d\n", m_sockfd);
+    LOG(LOG_DEBUG, "sockadd %d\n", (sockaddr *)&m_addr );
+    LOG(LOG_DEBUG, "socklen %d\n", (socklen_t *)&addr_length );
+    newSocket.m_sockfd = sc->osAccept(m_sockfd, (sockaddr *)&m_addr, (socklen_t *)&addr_length);
+    LOG(LOG_DEBUG, "Accepted on socket %d\n", newSocket.m_sockfd); >>>>>>>>>>> It doesn't print this lines 
+    return (newSocket.m_sockfd >= 0);
+}
+
+09/20/24 11:09:59 : DEBUG INSIDE TCPSERVER 09/20/24 11:09:59 : INFO Listener thread has been spawned
+09/20/24 11:09:59 : DEBUG In IOSTAT ADD/Sub iostat add 0 09/20/24 11:09:59 : INFO iostatListenerThread: START
+09/20/24 11:09:59 : DEBUG In IOSTAT Add/Sub host 128.221.250.35, Command iostat add 0 node heap-used
+09/20/24 11:09:59 : INFO m_listenForNewIOStat = true
+09/20/24 11:09:59 : DEBUG In IOSTAT ADD/Sub iostat add 0 09/20/24 11:09:59 : INFO iostatListenerThread: got a new connection
+09/20/24 11:09:59 : DEBUG In IOSTAT Add/Sub host 128.221.250.36, Command iostat add 0 node heap-used
+09/20/24 11:09:59 : DEBUG Accepting on socket 8
+09/20/24 11:09:59 : DEBUG sockadd -1623801328
+09/20/24 11:09:59 : DEBUG socklen -587600276
+09/20/24 11:09:59 : DEBUG In IOSTAT ADD/Sub iostat add 0 09/20/24 11:09:59 : DEBUG In IOSTAT Add/Sub host 128.221.250.35, Command iostat add 0 node busy
+09/20/24 11:09:59 : DEBUG In IOSTAT ADD/Sub iostat add 0 09/20/24 11:09:59 : DEBUG In IOSTAT Add/Sub host 128.221.250.36, Command iostat add 0 node busy
+09/20/24 11:09:59 : DEBUG In IOSTAT ADD/Sub iostat add 0 09/20/24 11:09:59 : DEBUG In IOSTAT Add/Sub host 128.221.250.35, Command iostat add 0 node fe-ops-read
+09/20/24 11:09:59 : DEBUG In IOSTAT ADD/Sub iostat a
+
+>>>>
+
+TcpServer::TcpServer(int port, int numMaxConcurrentConns)
+{
+    if (!Socket::create()) {
+        throw CommException ("Could not create server socket");
+    }
+
+    if (!Socket::bind(port)) {
+        throw CommException ("Could not bind the socket to port " + port);
+    }
+
+    if (!Socket::listen(numMaxConcurrentConns)) {
+        throw CommException ("Could not listen the port");
+    }
+}
+
+>>>>>>>>>>>>>>>
+
+18-10-2024
+
+Configure snmp v3 
+https://www.suse.com/support/kb/doc/?id=000020702
+
+net-snmp-create-v3-user -ro -a snmpuser_authPass -x snmpuser_privPass -a SHA -X AES snmpuser
+
+net-snmp-create-v3-user -ro -a Mi@Dim7T -x Mi@Dim7T -a SHA -X AES 
+
+sudo systemctl enable snmpd
+
+sudo systemctl start snmpd
+
+
+sudo firewall-cmd --add-port=161/udp --permanent
+sudo firewall-cmd --reload
+
+
+# Enable all logging levels
+debug all
+
+# Log to standard output (console)
+logOption Syslog=yes,stdout
+
+createUser service SHA "Mi@Dim7T" AES "Mi@Dim7T"
+rouser service authPriv
+dlmod vplexStats /opt/emc/VPlex/snmp-lib/vplexStats.so
+
+
+---
+
+/var/log/net-snmpd.log
+
+
+02:43:56
+
+
+Connection from UDP: [10.226.102.101]:58213->[10.226.102.101]:161
+Connection from UDP: [10.226.102.101]:58213->[10.226.102.101]:161
+10/18/24 02:44:09 : DEBUG IOSTAT fetch from cache (128.221.252.35)
+10/18/24 02:44:09 : ERROR Failed to retreive stat:: VPLEXDIRECTORCPUIDLE Status Code 4
+Connection from UDP: [10.226.102.101]:58213->[10.226.102.101]:161
+10/18/24 02:44:10 : INFO mod time 1729215950
+
+
+snmp/vplexstats/Vplexstats.cpp
+
+
+
+                switch (table_info->colnum)
+                {
+                    case COLUMN_VPLEXDIRECTORCPUIDLE:
+                        String sRetVal="";
+                        long retCode = getStatValue(reginfo, table_info,
+                                                    table_entry->vplexDirectorPrimaryIpAddr,
+                                                    "", sRetVal);
+
+                        if (retCode != STATUS_OK)
+                        {
+                            LOG(LOG_ERR,"Failed to retreive stat:: VPLEXDIRECTORCPUIDLE Status Code %d\n",retCode); >>>>>>>>>>>>>>>>>>>>>>>>>> Failed to retreive
+                            netsnmp_set_request_error(reqinfo, request,SNMP_ERR_GENERR);
+                        }
+                        else
+                        {
+                            long long lRetVal = strtoll(sRetVal.c_str(),NULL,0);
+                            table_entry->vplexDirectorCpuIdle = 100 - lRetVal;
+
+                            snmp_set_var_typed_integer( request->requestvb, ASN_INTEGER,
+                                                        table_entry->vplexDirectorCpuIdle);
+                        }
+                        break;
+                }
+
+
+
+>>>>>>>>>>>>>>>>>>>>>
+
+19-10-24
+
+https://jira.cec.lab.emc.com/browse/VPLEX-57327
+
+https://confluence.cec.lab.emc.com/display/VPLEX/AWP+Lite%3A+Metro+Node+SNMP+Support
+
+https://eos2git.cec.lab.emc.com/vplex/vplex/pull/56
+
+e92fa7fa7bb3aa61c9288b65d3ef4aa06789b9a9 - ( SMSv2: Remove SNMP code)
+This code is not supported on voyager. Any eventual SNMP support will
+be through the notifications service
+
+>>>>>>>>> 
+snmpUpdateExportedVolumes  ( 6757483723bdcd480b26c98030a4b64f2a42004d )
+
+1. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/Cluster.java
+
+2. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/ICluster.java
+
+3. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/StorageView.java
+
+4. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/VirtualVolume.java
+>>>>>>>>>
+
+snmpconfigFile
+
+5. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/snmp/SnmpConfigFile.java
+
+6. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/snmp/SnmpConfigFileUpdater.java
+
+
+>>>>>>>>>>
+
+The SNMP statistic related code was deleted from the SMSv2 as part of https://eos2git.cec.lab.emc.com/vplex/vplex/pull/56 (commit e92fa7fa7bb3aa61c9288b65d3ef4aa06789b9a9 specifically) and will need to be restored in order for the performance monitors to be able to send statistics to snmpd. 
+Only the monitor/SnmpRelay related code needs to be restored, not the SNMP trap-related code.
+
+By Mistakenly I restored . I removed now 
+
+SNMP TRAP update 
+
+7. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/SNMPTrap.java
+
+8. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/ISNMPTrap.java (SNMP_LOCKBOX_PREFIX) >> need to check this as well 
+
+9. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/SNMPTrapDispatcherFactory.java (import com.dell.vplex.common.snmp.westhawk.WestHawkSnmpTrapDispatcher;)>>> Not sure ab this file 
+
+>>>>>>>>>>>
+
+SNMP RELAY 
+
+10. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/snmp/SnmpRelay.java
+
+11. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/Monitor.java
+
+12. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/StatsCollector.java
+
+>>>>>>>>>>>>
+
+SNMP Command
+
+13. smsv2/com-emc-vplex-smsv2/src/java/com/emc/vplex/smsv2/business/snmp/ShellCommand.java
+
+>>>>>>>>>>>>>
+ 
+https://eos2git.cec.lab.emc.com/vplex/vplex/pull/1776
+
+Still needs to add Tests files 
+>>>>>>>>>>>>>
+I did changes added above files still , I'm getting status code 4 >> Needs to add debug statement and procced. 
+
+>>>>>>>>>>>>>
+
+1.3.6.1.4.1.1139.21.2.2.2.1.1
+
+director-1-1-a:/etc/snmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.1.1.3 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.35 = STRING: "director-1-1-A"
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.36 = STRING: "director-1-1-B"
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.37 = STRING: "director-1-2-A"
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.38 = STRING: "director-1-2-B"
+Error in packet.
+Reason: (genError) A general failure occured
+Failed object: SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.38
+
+
+director-1-1-a:/etc/snmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.2.1.1 -v3                                  
+Error in packet.
+Reason: (genError) A general failure occured
+Failed object: SNMPv2-SMI::enterprises.1139.21.2.2.2.1.1
+
+SNMPv2-SMI::enterprises.1139.21.2.2.2.1.1 = No Such Instance currently exists at this OID
+
+net-snmpd.log
+
+10/21/24 02:17:57 : DEBUG IOSTAT fetch from cache (128.221.252.35)                                                                                                                
+10/21/24 02:17:57 : ERROR Failed to retreive stat:: VPLEXDIRECTORHEAPUSED Status Code 4                                                                                           
+10/21/24 02:18:00 : DEBUG  threadGetDirectorStats entering for 128.221.252.35                                                                                                     
+10/21/24 02:18:00 : DEBUG IOSTAT fetch from cache (128.221.252.35)                                                                                                                
+10/21/24 02:18:00 : DEBUG  attribute is fe_read_avglat_attribute                                                                                                                  
+10/21/24 02:18:00 : DEBUG  threadGetDirectorStats entering for 128.221.252.35                                                                                                     
+10/21/24 02:18:00 : DEBUG IOSTAT fetch from cache (128.221.252.35)                                                                                                                
+10/21/24 02:18:00 : DEBUG  attribute is fe_write_avglat_attribute                                                                                                                 
+10/21/24 02:18:00 : DEBUG  threadGetDirectorStats entering for 128.221.252.35                                                                                                     
+10/21/24 02:18:00 : DEBUG IOSTAT fetch from cache (128.221.252.35)                                                                                                                
+10/21/24 02:18:00 : DEBUG  attribute is be_read_avglat_attribute                         
+
+/export/Monorepo/Oct_Snmp_18/vplex/snmp/vplexstats/Vplexstats.cpp
+
+                switch (table_info->colnum)
+                {
+                    case COLUMN_VPLEXDIRECTORHEAPUSED:
+                        String sRetVal="";
+                        long retCode = getStatValue(reginfo, table_info,
+                                                    table_entry->vplexDirectorPrimaryIpAddr,
+                                                    "", sRetVal);
+
+                        if (retCode != STATUS_OK)
+                        {
+                            LOG(LOG_ERR,"Failed to retreive stat:: VPLEXDIRECTORHEAPUSED Status Code %d\n",retCode); >>>>>>>>>>>>>>>>>>> Error stats code 4 
+                            netsnmp_set_request_error(reqinfo, request,SNMP_ERR_GENERR);
+                        }
+                        else
+                        {
+                            table_entry->vplexDirectorHeapUsed = strtoul(sRetVal.c_str(),NULL,0);
+                            snmp_set_var_typed_integer( request->requestvb, ASN_INTEGER,
+                                                        table_entry->vplexDirectorHeapUsed);
+                        }
+                        break;
+                }
+
+
+
+
+
+
+
+>>>
+
+10/21/24 03:05:15 : INFO init_vplexStats BEGIN
+10/21/24 03:05:15 : INFO in init()
+10/21/24 03:05:15 : ERROR failed::removeContext:: command iostat shctxt parser resp Status Code 1
+10/21/24 03:05:15 : ERROR failed::removeContext:: command iostat shctxt parser resp Status Code 1
+10/21/24 03:05:15 : ERROR failed::removeContext:: command iostat shctxt parser resp Status Code 1
+10/21/24 03:05:15 : ERROR failed::removeContext:: command iostat shctxt parser resp Status Code 1
+10/21/24 03:05:15 : INFO Listener thread has been spawned
+10/21/24 03:05:15 : INFO iostatListenerThread: START
+10/21/24 03:05:15 : DEBUG In IOSTAT ADD/Sub iostat add 0 10/21/24 03:05:15 : DEBUG In IOSTAT Add/Sub host 128.221.252.35, Command iostat add 0 node heap-used
+10/21/24 03:05:15 : DEBUG In IOSTAT ADD/Sub iostat add 0 10/21/24 03:05:15 : DEBUG In IOSTAT Add/Sub host 128.221.252.36, Command iostat add 0 node heap-used
+10/21/24 03:05:15 : DEBUG In IOSTAT ADD/Sub iostat add 0 10/21/24 03:05:15 : DEBUG In IOSTAT Add/Sub host 128.221.252.37, Command iostat add 0 node heap-used
+10/21/24 03:05:15 : DEBUG In IOSTAT ADD/Sub iostat add 0 10/21/24 03:05:15 : DEBUG In IOSTAT Add/Sub host 128.221.252.38, Command iostat add 0 node heap-used
+10/21/24 03:05:15 : DEBUG In IOSTAT ADD/Sub iostat add 0 10/21/24 03:05:15 : DEBUG In IOSTAT Add/Sub host 128.221.252.35, Command iostat add 0 node busy
+10/21/24 03:05:15 : DEBUG In IOSTAT ADD/Sub iostat add 0 10/21/24 03:05:15 : DEBUG In IOSTAT Add
+
+
+
+10/21/24 03:05:15 : DEBUG initialize_table_vplexDirectorVirtualVolumeTable BEGIN
+10/21/24 03:05:15 : DEBUG initialize_table_vplexDirectorVirtualVolumeTable END
+10/21/24 03:05:15 : INFO FE Port A0-FC0010/21/24 03:05:15 : INFO FE Port A0-FC0110/21/24 03:05:15 : INFO FE Port A0-FC0210/21/24 03:05:15 : INFO FE Port A0-FC0310/21/24 03:05:15 : INFO FE Port B0-FC0010/21/24 03:05:15 : INFO FE Port B0-FC0110/21/24 03:05:15 : INFO FE Port B0-FC0210/21/24 03:05:15 : INFO FE Port B0-FC0310/21/24 03:05:15 : INFO FE Port A0-FC0010/21/24 03:05:15 : INFO FE Port A0-FC0110/21/24 03:05:15 : INFO FE Port A0-FC0210/21/24 03:05:15 : INFO FE Port A0-FC0310/21/24 03:05:15 : INFO FE Port B0-FC0010/21/24 03:05:15 : INFO FE Port B0-FC0110/21/24 03:05:15 : INFO FE Port B0-FC0210/21/24 03:05:15 : INFO FE Port B0-FC0310/21/24 03:05:15 : INFO init_vplexStats END
+10/21/24 03:05:15 : DEBUG  threadGetDirectorStats entering for 128.221.252.35
+
+>>>
+
+
+
+10/21/24 03:32:31 : INFO  attribute is fe_write_avglat_attribute              
+Connection from UDP: [10.226.102.101]:46422->[10.226.102.101]:161             
+Connection from UDP: [10.226.102.101]:46422->[10.226.102.101]:161   
+10/21/24 03:32:34 : INFO reginfo: 0x555f14dc0fc010/21/24 03:32:34 : INFO Empty string: ""10/21/24 03:32:34 : INFO sRetVal: 10/21/24 03:32:34 : DEBUG IOSTAT fetch from cache (128.
+221.252.35)                                                                              
+10/21/24 03:32:34 : INFO retCode: 410/21/24 03:32:34 : ERROR Failed to retreive stat:: VPLEXDIRECTORHEAPUSED Status Code 4                                                        
+Connection from UDP: [10.226.102.101]:46422->[10.226.102.101]:161             
+10/21/24 03:32:36 : DEBUG  threadGetDirectorStats entering for 128.221.252.35 
+10/21/24 03:32:36 : DEBUG IOSTAT fetch from cache (128.221.252.35)
+
+
+>>>>>>>>>
+Remove EC-01 on xml ,
+				<port>
+					<name>EC-01</name>
+					<role>public</role>
+				</port>
+				
+Instead of V3 configure V2 and check its working or not ?
+
+
+
+
+To convert your SNMPv3 configuration to SNMPv2, you need to adjust the authentication and privacy settings, as SNMPv2 does not support these features. SNMPv2 primarily relies on community strings for security.
+
+Here’s how you can convert your configuration to use SNMPv2:
+
+Remove SNMPv3-specific directives:
+
+Delete the createUser and rouser lines, as SNMPv2 doesn't require users or encryption settings.
+Use SNMPv2 community strings:
+
+Use rocommunity for read-only access and rwcommunity for read-write access.
+Here’s the updated snmpd.conf for SNMPv2:
+
+bash
+Copy code
+syslocation Server Room
+syscontact Sysadmin (root@localhost)
+
+# These really aren't meant for production use. They include all MIBS
+# and can use considerable resources. See snmpd.conf(5) for information
+# on setting up groups and limiting MIBS.
+rocommunity public 127.0.0.1
+rwcommunity mysecret 127.0.0.1
+
+# Enable all logging levels
+debug all
+
+# Log to standard output (console)
+logOption Syslog=yes,stdout
+
+# SNMPv2 doesn't use user authentication or encryption, so no createUser/rouser directives
+
+# Load the vplexStats module
+dlmod vplexStats /opt/emc/VPlex/snmp-lib/vplexStats.so
+Key Changes:
+Removed SNMPv3-specific lines (createUser and rouser).
+Added rwcommunity: This line is commented out in your original config but is necessary for read-write access in SNMPv2.
+This config now uses SNMPv2 with community strings for security.
+
+
+
+
+
+
+You said:
+how to use for snmp v2 walk command
+ChatGPT said:
+ChatGPT
+To perform an SNMP walk with SNMPv2, you can use the snmpwalk command and specify the version (-v2c) and the community string (-c). Here's the basic syntax for an SNMPv2 walk command:
+
+bash
+Copy code
+snmpwalk -v2c -c <community> <hostname> <OID>
+Parameters:
+-v2c: Specifies that SNMPv2c should be used.
+-c <community>: Specifies the community string (e.g., public for read-only access).
+<hostname>: The IP address or hostname of the device you want to query (e.g., 127.0.0.1).
+<OID>: The Object Identifier (OID) you want to walk. If omitted, the walk will start from the root (OID 1.3.6.1), which will return all available data.
+Example:
+If you want to walk the entire SNMP tree using community public on the local machine (127.0.0.1), the command would be:
+
+bash
+Copy code
+snmpwalk -v2c -c public 127.0.0.1
+Or, to walk a specific OID, such as system information (OID 1.3.6.1.2.1.1):
+
+bash
+Copy code
+snmpwalk -v2c -c public 127.0.0.1 1.3.6.1.2.1.1
+This command will return all the available SNMP information starting from the specified OID.
+
+
+
+>>>>>>>>>>>>
+
+
+
+
+
+V3 
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.1.1.3 -v3
+
+V2
+snmpwalk -v2c -c public 127.0.0.1 1.3.6.1.4.1.1139.21.2.2.1.1.3
+
+snmpwalk -v2c -c public 127.0.0.1 1.3.6.1.4.1.1139.21.2.2.2.1.1
+
+
+https://confluence.cec.lab.emc.com/display/VPLEX/Issues+Faced+-+Restored+SnmpRelay+and+Monitor+related+changes+in+SMSv2
+
+>>>>>>>> 21-10-2024 
+
+>>>>>>>>>>>>>
+
+Status code 4 indicates an issue with the iostat component or nvol:
+
+vplexstats/Globals.h:    STATUS_NOTREADY=4,  //either iostat or nvol is not yet ready
+
+
+vim vplexstats/IOStatStrategy.cpp it looks like it does some caching of the results
+
+Response IOStatStrategy::fetch(Stringvector listOfIdx, OIDEntry attr)
+{
+    String host;
+    String arguments;
+    Response resp, resp1;
+
+    try
+    {
+        host = listOfIdx[0];
+        LOG(LOG_DEBUG, "IOSTAT fetch from cache (%s)\n", host.c_str()); >>>>>>>>>>>>>>>>>>>>>>>>
+
+        resp = getResponseFromCache(host);
+        if (resp.getStatusCode() != STATUS_OK) {
+            return resp;
+        }
+
+        for (unsigned int idx = 1 ; idx < listOfIdx.size(); idx++)
+        {
+            arguments += listOfIdx[idx];
+        }
+
+        IOStatAttribute value = attr.m_iostatAttribute;
+
+
+        String parseStr = resp.getResponseData();
+        Stringvector srchCtrgy;
+
+        srchCtrgy = value.getSearchString();
+        if (arguments.size() > 0)
+        {
+            if (attr.m_attributeName.find("VirtualVolume") > 0 &&
+                attr.m_attributeName.find("Latency") > 0) {
+                srchCtrgy.insert(srchCtrgy.begin()+2, arguments);
+            } else {
+                srchCtrgy.push_back(arguments);
+            }
+        }
+
+
+280 bool IOStatStrategy::init()
+281 {
+        ...
+304         resp.setStatusCode(STATUS_NOTREADY);     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  
+305         dirRespPair = std::make_pair(ipAddress, resp);
+306         m_DirectorResponseCacheMap.insert(dirRespPair);
+307     }
+
+
+
+
+>>>>>>>>>
+
+
+1, system level monitors
+2, volume level monitors
+
+
+>>>>>>>>>>>>
+
+/var/log/VPlex/cli/director-1-1-A_PERPETUAL_vplex_sys_perf_mon.log
+
+
+1.3.6.1.4.1.1139.21.2.2.5.1.2
+
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.103  1.3.6.1.4.1.1139.21.2.2.5.1.2 -v3
+
+
+vplexDirectorFEPortName
+service@director-1-1-a:~> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.103  1.3.6.1.4.1.1139.21.2.2.5.1.2 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.35.1 = STRING: "A0-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.35.2 = STRING: "A0-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.35.3 = STRING: "A0-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.35.4 = STRING: "A0-FC03"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.36.1 = STRING: "B0-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.36.2 = STRING: "B0-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.36.3 = STRING: "B0-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.36.4 = STRING: "B0-FC03"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.37.1 = STRING: "A0-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.37.2 = STRING: "A0-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.37.3 = STRING: "A0-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.37.4 = STRING: "A0-FC03"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.38.1 = STRING: "B0-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.38.2 = STRING: "B0-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.38.3 = STRING: "B0-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.38.4 = STRING: "B0-FC03"
+Error in packet.
+Reason: (genError) A general failure occured
+Failed object: SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.128.221.252.38.4
+
+
+
+1.3.6.1.4.1.1139.21.2.2.7.1.
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.103  1.3.6.1.4.1.1139.21.2.2.7.1 -v3
+
+
+vplexDirectorBEPortName
+
+service@director-1-1-a:~> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.103  1.3.6.1.4.1.1139.21.2.2.7.1 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.35.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.35.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.35.3 = Gauge32: 3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.35.4 = Gauge32: 4
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.36.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.36.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.36.3 = Gauge32: 3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.36.4 = Gauge32: 4
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.37.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.37.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.37.3 = Gauge32: 3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.37.4 = Gauge32: 4
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.38.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.38.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.38.3 = Gauge32: 3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.128.221.252.38.4 = Gauge32: 4
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.35.1 = STRING: "A1-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.35.2 = STRING: "A1-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.35.3 = STRING: "A1-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.35.4 = STRING: "A1-FC03"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.36.1 = STRING: "B1-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.36.2 = STRING: "B1-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.36.3 = STRING: "B1-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.36.4 = STRING: "B1-FC03"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.37.1 = STRING: "A1-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.37.2 = STRING: "A1-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.37.3 = STRING: "A1-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.37.4 = STRING: "A1-FC03"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.38.1 = STRING: "B1-FC00"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.38.2 = STRING: "B1-FC01"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.38.3 = STRING: "B1-FC02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.128.221.252.38.4 = STRING: "B1-FC03"
+Error in packet.
+Reason: (genError) A general failure 
+
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.103 1.3.6.1.4.1.1139.21.2.2.1.1.1 -v3
+
+
+monitor stat-list -c director
+
+
+
+Driver 8870417271
+
+
+VPlexcli:/monitoring> monitor stat-list -c director.heap-used                                                                                                                       
+monitor stat-list:  Evaluation of <<monitor stat-list director.heap-used>> failed.
+cause:              Command execution failed.
+cause:              Failed to set value for option --categories.
+cause:              Could not find any categories matching 'director.heap-used'.
+
+
+
+snmpbulkget -v 2c -c public -m /opt/emc/VPlex/mibs/VPLEX-MIB.mib 10.226.102.103 1.3.6.1.4.1.1139.21.2.2.2 -Cr48
+
+snmpbulkget -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv -m /opt/emc/VPlex/mibs/VPLEX-MIB.mib 10.226.102.103 1.3.6.1.4.1.1139.21.2.2.2 -Cr48 -v3
+
+
+
+ns director-1-1-A> iostat showcontexts                                                                                                                                                                   
+Current contexts:                                                                                                                                                                                        
+1: accessed 12 sec ago cname SMS_director-1-1-A_VIRTUAL_VOLUMES_PERPETUAL_MONITOR                                                                                                                        
+2: accessed 2 sec ago cname SMS_director-1-1-A_PERPETUAL_vplex_sys_perf_mon_v35       
+
+
+ns director-1-1-A> iostat d 2
+iostat d 2
+be-prt be-prt     be-prt     be-prt   be-prt   be-prt    be-prt    be-prt     be-prt     be-prt be-prt be-prt    be-prt    be-prt com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro com-io-gro   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port   com-port com-siteio com-siteio com-siteio       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios       dios  fe-node    fe-node    fe-node   fe-node    fe-node    fe-node fe-node fe-node    fe-node   fe-node    fe-node fe-prt fe-prt fe-prt fe-prt     fe-prt     fe-prt   fe-prt   fe-prt     fe-prt     fe-prt  fe-prt  fe-prt    fe-prt    fe-prt fe-prt fe-prt     mutex      mutex      mutex      node     node       node      node       node       node   node     node    node       node      node      node  node   node       node       node       node       node     node    node       node       node       node      node      node  node       node       node       node       node       ramf   ramf   ramf   ramf   ramf   ramf   ramf       ramf   ramf   scsidisk   scsidisk   scsidisk   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system   system 
+  read   read req-reject req-reject req-fail req-fail req-start req-start req-timeou req-timeou  write  write req-abort req-abort  io-tm-avg  io-tm-avg  io-tm-avg  io-tm-avg  io-tm-min  io-tm-min  io-tm-min  io-tm-min msg-cnt-in msg-cnt-in msg-cnt-in msg-cnt-in  io-tm-max  io-tm-max  io-tm-max  io-tm-max  msg-b-out  msg-b-out  msg-b-out  msg-b-out  io-tm-cnt  io-tm-cnt  io-tm-cnt  io-tm-cnt   msg-b-in   msg-b-in   msg-b-in   msg-b-in msg-cnt-ou msg-cnt-ou msg-cnt-ou msg-cnt-ou recv-frame recv-frame send-carri send-carri send-pckts send-pckts collisions collisions send-overr send-overr recv-bytes recv-bytes send-error send-error recv-error recv-error send-bytes send-bytes send-dropp send-dropp recv-overr recv-overr recv-pckts recv-pckts recv-dropp recv-dropp    max-lat    min-lat    avg-lat nod-req-re nod-lock-a nod-move-s nod-rply-s nod-fwd-wa nod-req-se nod-locks- nod-req-ou nod-lock-a nod-move-r nod-req-re nod-rel-se nod-req-re nod-failed nod-req-se nod-fwd-la nod-req-se nod-rel-re nod-lock-a nod-req-re nod-max-re nod-req-re nod-req-wa nod-req-fa nod-req-se nod-req-re nod-locks- ws16-ops read-avgla xcopy-avgl xcopy-ops write-avgl ws16-avgla  aborts caw-ops unmap-avgl unmap-ops caw-avglat    ops    ops   read   read read-avgla read-avgla ops-read ops-read write-avgl write-avgl ops-act ops-act ops-write ops-write  write  write fe-avglat tach-avgla tower-avgl be-resets be-write local-rbld be-busies be-unitatt local-rbld be-ops fe-write be-read be-ops-rea heap-used be-qfulls  busy fe-ops local-rbld dr1-rbld-a dr1-rbld-r fe-ops-act fe-ops-q fe-read fe-ops-wri local-rbld dr1-rbld-s be-ops-ws be-aborts be-ws fe-ops-rea be-ops-wri local-rbld be-timeout imp-rd-avg imp-op exp-wr imp-rd exp-op exp-rd cur-op imp-wr-avg imp-wr read-avgla write-avgl writesame- cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy cpu-busy 
+ IO-02  IO-03      IO-02      IO-03    IO-02    IO-03     IO-02     IO-03      IO-02      IO-03  IO-02  IO-03     IO-02     IO-03          1          2          3          4          1          2          3          4          1          2          3          4          1          2          3          4          1          2          3          4          1          2          3          4          1          2          3          4          1          2          3          4      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01      LC-00      LC-01          1          1          1       usec       usec                                                                         usec                                        usec                                                              usec                             usec                  usec                  usec                           usec       usec                 usec       usec                       usec                 usec  IO-01  IO-00  IO-01  IO-00      IO-01      IO-00    IO-01    IO-00      IO-01      IO-00   IO-01   IO-00     IO-01     IO-00  IO-01  IO-00      usec       usec       usec                 MB         MB                              MB              MB      MB                    %               %                                      MB                          MB                  usec         MB                        MB                             usec                  usec            MB     MB            MB              usec     MB       usec       usec       usec       22       23       24       25       26       27       28       29       30       31       10       11       12       13       14       15       16       17       18       19        0        1        2        3        4        5        6        7        8        9       20       21 
+    0M     0M          0          0        0        0      2344      3904          0          0     0M     0M         0         0       38us        0us        0us        0us        8us        0us        0us        0us          0          0          0          0      104us        0us        0us        0us         0M         0M         0M         0M         15          0          0          0         0M         0M         0M         0M       5487       1938        853          0          0          0          0          0      60958      65954          0          0          0          0         7M         8M          0          0          0          0         6M         7M          0          0          0          0      77878      83323          0          0      104us        8us       38us          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0        0          0          0         0          0          0       0       0          0         0          0      0      0     0M     0M        0us        0us        0        0        0us        0us       0       0         0         0     0M     0M       766 error            6895         0        0          0         0       1040          0      0        0       0          0        35         0     0      0          0          0          0          0        0       0          0          0          0         0         0     0          0          0          0          0          0      0      0      0      0      0      0          0      0          0          0          0       0%       0%       0%       0%       0%       0%       0%       0%     100%       1%       0%       0%       0%       0%     100%       0%       0%       1%       0%       1%       0%       0%       0%       0%       0%       0%       0%       0%       0%       0%       0%       0% 
+	
+	
+	iostat d 2 heap-used
+	
+	
+	ns director-1-1-A> iostat l 1                                                                                                                                                                            
+ns director-1-1-A>                                                                                                                                                                                       
+ns director-1-1-A> nvoiostat l 2
+
+
+telnet 128.221.252.35 65000
+
+
+ns director-1-1-A> iostat sh node
+Statistics for component node:
+        name: fe-ops, type: counter, units: none, args: none
+        name: fe-ops-read, type: counter, units: none, args: none
+        name: fe-ops-write, type: counter, units: none, args: none
+        name: fe-read, type: counter, units: bytes, args: none
+        name: fe-write, type: counter, units: bytes, args: none
+        name: fe-ops-act, type: reading, units: none, args: none
+        name: fe-ops-q, type: reading, units: none, args: none
+        name: dr1-rbld-sent, type: counter, units: bytes, args: none
+        name: dr1-rbld-recv, type: counter, units: bytes, args: none
+        name: local-rbld-active, type: reading, units: none, args: none
+        name: dr1-rbld-active, type: reading, units: none, args: none
+        name: local-rbld-read, type: counter, units: bytes, args: none
+        name: local-rbld-write, type: counter, units: bytes, args: none
+        name: local-rbld-read-latency, type: average, units: usec, args: none
+        name: local-rbld-write-latency, type: average, units: usec, args: none
+        name: be-ops, type: counter, units: none, args: none
+        name: be-ops-read, type: counter, units: none, args: none
+        name: be-ops-write, type: counter, units: none, args: none
+        name: be-ops-ws, type: counter, units: none, args: none
+        name: be-read, type: counter, units: bytes, args: none
+        name: be-write, type: counter, units: bytes, args: none
+        name: be-ws, type: counter, units: bytes, args: none
+        name: be-aborts, type: counter, units: none, args: none
+        name: be-timeouts, type: counter, units: none, args: none
+        name: be-resets, type: counter, units: none, args: none
+        name: be-qfulls, type: counter, units: none, args: none
+        name: be-busies, type: counter, units: none, args: none
+        name: be-unitattns, type: counter, units: none, args: none
+        name: busy, type: reading, units: percent, args: none
+        name: heap-used, type: reading, units: percent, args: none
+        name: async-write, type: counter, units: bytes, args: none
+ns director-1-1-A> 
+
+
+ns director-1-1-A> iostat ungetcontext 3
+freed context 3
+ns director-1-1-A> 
+ns director-1-1-A> iostat l
+ns director-1-1-A> 
+ns director-1-1-A> iostat d
+
+iostat g
+ context 2 
+ns director-1-1-A> 
+2024-10-24 12:32:28.63 director-1-1-A enf/10 DEBUG: Operational event DirectorHeartbeat (65543) issued (sequence 61, scope director/0x2d6000a2, localDirectorId 761266338): Heartbeat message from a director.
+2024-10-24 12:32:28.63 director-1-1-A enf/10 DEBUG: Operational event ClusterHeartbeat (65544) issued (sequence 62, scope cluster/1, localClusterId 1): Heartbeat message from a cluster.
+ns director-1-1-A> iostat add 3 node
+iostat add 3 node
+can't find context 3
+ns director-1-1-A> 
+ns director-1-1-A> iostat add 2 node
+iostat add 2 node
+added node:fe-ops to display
+added node:fe-ops-read to display
+added node:fe-ops-write to display
+added node:fe-read to display
+added node:fe-write to display
+added node:fe-ops-act to display
+added node:fe-ops-q to display
+added node:dr1-rbld-sent to display
+added node:dr1-rbld-recv to display
+added node:local-rbld-active to display
+added node:dr1-rbld-active to display
+added node:local-rbld-read to display
+added node:local-rbld-write to display
+added node:local-rbld-read-latency to display
+added node:local-rbld-write-latency to display
+added node:be-ops to display
+added node:be-ops-read to display
+added node:be-ops-write to display
+added node:be-ops-ws to display
+added node:be-read to display
+added node:be-write to display
+added node:be-ws to display
+added node:be-aborts to display
+added node:be-timeouts to display
+added node:be-resets to display
+added node:be-qfulls to display
+added node:be-busies to display
+added node:be-unitattns to display
+added node:busy to display
+added node:heap-used to display
+added node:async-write to display
+ns director-1-1-A> 
+
+
+ns director-1-1-A> iostat d 2 
+iostat d 2 
+  node       node       node    node     node       node     node       node       node       node       node       node       node       node       node   node       node       node      node    node     node  node      node       node      node      node      node       node  node      node       node 
+fe-ops fe-ops-rea fe-ops-wri fe-read fe-write fe-ops-act fe-ops-q dr1-rbld-s dr1-rbld-r local-rbld dr1-rbld-a local-rbld local-rbld local-rbld local-rbld be-ops be-ops-rea be-ops-wri be-ops-ws be-read be-write be-ws be-aborts be-timeout be-resets be-qfulls be-busies be-unitatt  busy heap-used async-writ 
+     0          0          0      0M       0M          0        0         0M         0M          0          0         0M         0M        0us        0us      0          0          0         0      0M       0M    0M         0          0         0         0         0       1040    0%       35%         0M 
+ns director-1-1-A> 
+
+
+You can see that heap-used is second last in this list (35%)
+
+
+No problem.  There might be an issue with the monitors in the UI... this used to happen quite frequently in the past
+
+
+
+snmpwalk -v2c -c public localhost 1.3.6.1.4.1.1139.21.2.2.2.1.
+
+
+
+>>>>>>>>>>>>
+
++++ b/snmp/vplexstats/Socket.cpp
+@@ -181,7 +181,11 @@ bool Socket::accept (Socket &newSocket) const
+ {
+     SysCall *sc = SysCall::getInstance();
+     int addr_length = sizeof(m_addr);
++    LOG(LOG_DEBUG, "Accepting on socket %d\n", m_sockfd);
++    LOG(LOG_DEBUG, "sockadd %d\n", (sockaddr *)&m_addr );
++    LOG(LOG_DEBUG, "socklen %d\n", (socklen_t *)&addr_length );
+     newSocket.m_sockfd = sc->osAccept(m_sockfd, (sockaddr *)&m_addr, (socklen_t *)&addr_length);
++    LOG(LOG_DEBUG, "Accepted on socket %d\n", newSocket.m_sockfd); >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Couldn't see this in logs 
+     return (newSocket.m_sockfd >= 0);
+ }
+
+11/06/24 00:00:08 : DEBUG INSIDE TCPSERVER 11/06/24 00:00:08 : INFO Listener thread has been spawned 
+11/06/24 00:00:08 : INFO iostatListenerThread: START
+11/06/24 00:00:08 : INFO iostatListenerThread: got a new connection
+11/06/24 00:00:08 : DEBUG Accepting on socket 8
+11/06/24 00:00:08 : DEBUG sockadd -301642992
+11/06/24 00:00:08 : DEBUG socklen -2086789524
+
+
++                        LOG(LOG_INFO, "reginfo: %p", reginfo);
++                        //LOG(LOG_INFO, "table_info: %p", table_info);
++                        //LOG(LOG_INFO, "vplexDirectorPrimaryIpAddr: %s", table_entry->vplexDirectorPrimaryIpAddr);
++                        LOG(LOG_INFO, "Empty string: \"%s\"", "");
++                        LOG(LOG_INFO, "sRetVal: %s", sRetVal); >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> sRetVal am getting this below check it 
+                         long retCode = getStatValue(reginfo, table_info,
+                                                     table_entry->vplexDirectorPrimaryIpAddr,
+                                                     "", sRetVal);
+ 
++                        LOG(LOG_INFO, "retCode: %ld", retCode); >>>>>>>>>>>>>>> retCode: 4 we are getting. 
++
+                         if (retCode != STATUS_OK) >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> these 2 values are not status ok 
+
+
+11/06/24 01:28:46 : INFO reginfo: 0x55b5ee05612011/06/24 01:28:46 : INFO Empty string: ""11/06/24 01:28:46 : INFO sRetVal: <90>Ðk}ÿ^?11/06/24 01:28:46 : DEBUG In IOSTAT fetch
+11/06/24 01:28:46 : DEBUG IOSTAT fetch from cache (128.221.252.35)
+11/06/24 01:28:46 : DEBUG IOSTAT fetch from cache (DirectorHeapUsedOID)
+11/06/24 01:28:46 : DEBUG Response 4
+11/06/24 01:28:46 : DEBUG Response 4
+11/06/24 01:28:46 : DEBUG IOSTAT fetch from cache (128.221.252.35)
+11/06/24 01:28:46 : INFO retCode: 411/06/24 01:28:46 : ERROR Failed to retreive stat:: VPLEXDIRECTORHEAPUSED Status Code 4  retCode: 4 >>>>>>>>>>>>>>>>>>>>>>>>>>
+Connection from UDP: [10.226.102.101]:39283->[10.226.102.101]:161 
+
+>>>>
+vplexDirectorName
+
+service@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.1.1.3 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.35 = STRING: "director-1-1-A"
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.36 = STRING: "director-1-1-B"
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.37 = STRING: "director-1-2-A"
+SNMPv2-SMI::enterprises.1139.21.2.2.1.1.3.128.221.252.38 = STRING: "director-1-2-B"
+
+
+vplexDirectorFEPortName
+
+service@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.2 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.101.1 = STRING: "IO-00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.101.2 = STRING: "IO-01"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.102.1 = STRING: "IO-00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.102.2 = STRING: "IO-01
+
+vplexDirectorBEPortName
+
+service@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.2 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.101.1 = STRING: "IO-02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.101.2 = STRING: "IO-03"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.102.1 = STRING: "IO-02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.102.2 = STRING: "IO-03"
+
+vplexDirectorFEPortIndex 
+
+service@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.1 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.101.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.101.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.102.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.102.2 = Gauge32: 2
+
+smsv2/com-emc-vplex-smsv2/src/test/com/emc/vplex/smsv2/business/MonitorTest.java
+smsv2/com-emc-vplex-smsv2/src/test/com/emc/vplex/smsv2/business/StatsCollectorTest.java
+
+smsv2/com-emc-vplex-smsv2/src/test/com/emc/vplex/smsv2/business/snmp/SnmpConfigFileTest.java
+smsv2/com-emc-vplex-smsv2/src/test/com/emc/vplex/smsv2/business/snmp/SnmpRelayTest.java
+smsv2/com-emc-vplex-smsv2/src/test/com/emc/vplex/smsv2/business/snmp/SnmpTestSuite.java
+
+
+>>>>>>>>>>>>>>>
+
+snmpwalk -u snmpuser -A Mi@Dim7T -a SHA -X Fabricx@01 -x AES -l authPriv 10.226.102.103 1.3.6.1.4.1.1139.21.2.2.2.1.1 -v3 
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.2.1.1 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.2.1.1.10.226.102.101 = INTEGER: 35
+SNMPv2-SMI::enterprises.1139.21.2.2.2.1.1.10.226.102.102 = INTEGER: 35
+
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.3.1.1 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.3.1.1.10.226.102.101 = INTEGER: 100
+SNMPv2-SMI::enterprises.1139.21.2.2.3.1.1.10.226.102.102 = INTEGER: 100
+
+
+vplexDirectorFEOpsRead
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.1 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.1.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.1.10.226.102.102 = Counter64: 0
+
+vplexDirectorFEOpsWrite
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.2 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.2.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.2.10.226.102.102 = Counter64: 0
+
+
+vplexDirectorFEOpsQueued
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.3 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.3.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.3.10.226.102.102 = Counter64: 0
+
+vplexDirectorFEOpsActive
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.4 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.4.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.4.10.226.102.102 = Counter64: 0
+
+vplexDirectorFEOpsAvgReadLatency
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.5 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.5.10.226.102.101 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.5.10.226.102.102 = Gauge32: 0
+
+vplexDirectorFEOpsAvgWriteLatency
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.6 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.6.10.226.102.101 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.6.10.226.102.102 = Gauge32: 0
+
+vplexDirectorFEBytesRead
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.7 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.7.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.7.10.226.102.102 = Counter64: 0
+
+vplexDirectorFEBytesWrite
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.4.1.8 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.8.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.4.1.8.10.226.102.102 = Counter64: 0
+
+
+vplexDirectorFEPortIndex 
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.1 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.101.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.101.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.102.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.1.10.226.102.102.2 = Gauge32: 2
+
+vplexDirectorFEPortName
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.2 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.101.1 = STRING: "IO-00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.101.2 = STRING: "IO-01"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.102.1 = STRING: "IO-00"
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.2.10.226.102.102.2 = STRING: "IO-01"
+
+vplexDirectorFEPortOpsRead
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.3 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.3.10.226.102.101.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.3.10.226.102.101.2 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.3.10.226.102.102.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.3.10.226.102.102.2 = Counter64: 0
+
+vplexDirectorFEPortOpsWrite
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.4 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.4.10.226.102.101.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.4.10.226.102.101.2 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.4.10.226.102.102.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.4.10.226.102.102.2 = Counter64: 0
+
+
+vplexDirectorFEPortOpsActive
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.6 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.6.10.226.102.101.1 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.6.10.226.102.101.2 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.6.10.226.102.102.1 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.6.10.226.102.102.2 = Gauge32: 0
+
+
+vplexDirectorFEPortOpsAvgReadLatency OBJECT-TYPE
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.7 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.7.10.226.102.101.1 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.7.10.226.102.101.2 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.7.10.226.102.102.1 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.7.10.226.102.102.2 = Gauge32: 0
+
+
+vplexDirectorFEPortOpsAvgWriteLatency
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.8 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.8.10.226.102.101.1 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.8.10.226.102.101.2 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.8.10.226.102.102.1 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.8.10.226.102.102.2 = Gauge32: 0
+director-1-1-a:/tmp # 
+
+
+vplexDirectorFEPortBytesRead
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.9 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.9.10.226.102.101.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.9.10.226.102.101.2 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.9.10.226.102.102.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.9.10.226.102.102.2 = Counter64: 0
+
+vplexDirectorFEPortBytesWrite
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.10 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.10.10.226.102.101.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.10.10.226.102.101.2 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.10.10.226.102.102.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.10.10.226.102.102.2 = Counter64: 0
+director-1-1-a:/tmp # 
+
+vplexDirectorFEPortOps
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.11 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.11.10.226.102.101.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.11.10.226.102.101.2 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.11.10.226.102.102.1 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.11.10.226.102.102.2 = Counter64: 0
+service@director-1-1-a:/tmp> snmpwalk -v3 -u snmp -l authPriv -a SHA-512 -A Mi@Dim7TT -x AES -X Fabricx@01 10.226.102.103  1.3.6.1.4.1.1139.21.2.2.1.1.3
+
+Fabricx@01service@director-1-1-a:~>
+
+vplexDirectorBETable
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.1.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.1.10.226.102.102 = Counter64: 239
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.2.10.226.102.101 = Counter64: 24
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.2.10.226.102.102 = Counter64: 452
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.5.10.226.102.101 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.5.10.226.102.102 = Gauge32: 470
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.6.10.226.102.101 = Gauge32: 2861
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.6.10.226.102.102 = Gauge32: 1607
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.7.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.7.10.226.102.102 = Counter64: 1064960
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.8.10.226.102.101 = Counter64: 98304
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.8.10.226.102.102 = Counter64: 3088384
+
+vplexDirectorBETableEntry
+
+vplexDirectorBEOpsRead
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.1 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.1.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.1.10.226.102.102 = Counter64: 239
+director-1-1-a:/tmp # 
+
+
+vplexDirectorBEOpsWrite
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.2 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.2.10.226.102.101 = Counter64: 24
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.2.10.226.102.102 = Counter64: 452
+
+vplexDirectorBEOpsAvgReadLatency
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.5 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.5.10.226.102.101 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.5.10.226.102.102 = Gauge32: 470
+
+vplexDirectorBEOpsAvgWriteLatency
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.6 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.6.10.226.102.101 = Gauge32: 2861
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.6.10.226.102.102 = Gauge32: 1607
+
+
+vplexDirectorBEBytesRead
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.7 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.7.10.226.102.101 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.7.10.226.102.102 = Counter64: 1064960
+
+vplexDirectorBEBytesWrite OBJECT-TYPE
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.8 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.8.10.226.102.101 = Counter64: 98304
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.8.10.226.102.102 = Counter64: 3088384
+
+vplexDirectorBEPortTable OBJECT-TYPE
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7 -v3                                                                                                                                     
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.101.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.101.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.102.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.102.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.101.1 = STRING: "IO-02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.101.2 = STRING: "IO-03"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.102.1 = STRING: "IO-02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.102.2 = STRING: "IO-03"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.101.1 = Counter64: 103493334
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.101.2 = Counter64: 103568214
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.102.1 = Counter64: 158183682
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.102.2 = Counter64: 159103874
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.101.1 = Counter64: 49152
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.101.2 = Counter64: 49152
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.102.1 = Counter64: 1830912
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.102.2 = Counter64: 1830912
+
+vplexDirectorBEPortIndex
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.1 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.101.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.101.2 = Gauge32: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.102.1 = Gauge32: 1
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.1.10.226.102.102.2 = Gauge32: 2
+
+
+vplexDirectorBEPortName
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.2 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.101.1 = STRING: "IO-02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.101.2 = STRING: "IO-03"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.102.1 = STRING: "IO-02"
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.2.10.226.102.102.2 = STRING: "IO-03"
+
+vplexDirectorBEPortBytesRead
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.9 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.101.1 = Counter64: 103493334
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.101.2 = Counter64: 103568214
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.102.1 = Counter64: 158183682
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.9.10.226.102.102.2 = Counter64: 159103874
+
+vplexDirectorBEPortBytesWrite
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.10 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.101.1 = Counter64: 49152
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.101.2 = Counter64: 49152
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.102.1 = Counter64: 1830912
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.10.10.226.102.102.2 = Counter64: 1830912
+
+>>>
+
+vplexDirectorFailoverIpAddr > 1.3.6.1.4.1.1139.21.2.2.1.1.2
+vplexDirectorPrimaryIpAddr > 1.3.6.1.4.1.1139.21.2.2.1.1.1
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.1.1.1 -v3 
+
+vplexDirectorFEPortOpsQueued
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.5 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.5 = No Such Instance currently exists at this OID
+
+vplexDirectorBEOpsQueued
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.3 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.3 = No Such Instance currently exists at this OID
+
+vplexDirectorBEOpsActive
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.4 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.4 = No Such Instance currently exists at this OID
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.1 -v3 
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+Timeout: No Response from 10.226.102.101
+
+vplexDirectorBEPortOpsRead
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.3 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.3 = No Such Instance currently exists at this OID
+
+vplexDirectorBEPortOpsWrite
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.4 -v3
+\SNMPv2-SMI::enterprises.1139.21.2.2.7.1.4 = No Such Instance currently exists at this OID
+
+vplexDirectorBEPortOpsQueued
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.5 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.5 = No Such Instance currently exists at this 
+
+vplexDirectorBEPortOpsActive
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.6 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.6 = No Such Instance currently exists at this OID
+director-1-1-a:/tmp # 
+
+vplexDirectorBEPortOpsAvgReadLatency
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.7.1.7 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.7.1.7 = No Such Instance currently exists at this OID
+
+vplexDirectorBEPortOpsAvgWriteLatency
+
+VplexDirectorVirtualVolumeEntry ::= SEQUENCE {
+	vplexDirectorVirtualVolumeName              DisplayString,
+	vplexDirectorVirtualVolumeUuid              DisplayString,
+	vplexDirectorVirtualVolumeOps               Counter64,
+	vplexDirectorVirtualVolumeRead              Counter64,
+	vplexDirectorVirtualVolumeWrite             Counter64,
+	vplexDirectorVirtualVolumeReadAvgLatency    Gauge32,
+	vplexDirectorVirtualVolumeWriteAvgLatency   Gauge32
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1 = No Such Object available on this agent at this OID
+
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.1 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.1 = No Such Instance currently exists at this OID
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.2 -v3                                                                                                                                 
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.2 = No Such Instance currently exists at this OID
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.3 -v3                                                                                                                                 
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.3 = No Such Instance currently exists at this OID
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.4 -v3                                                                                                                                 
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.4 = No Such Instance currently exists at this OID
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.5 -v3                                                                                                                                 
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.5 = No Such Instance currently exists at this OID
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.6 -v3                                                                                                                                 
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.6 = No Such Instance currently exists at this OID
+director-1-1-a:/tmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.7 -v3                                                                                                                                 
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.7 = No Such Instance currently exists at this OID
+
+
+>>>>>>>>>>>
+
+vplexDirectorTable
+
+service@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.1 -v3 
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+security service 3 error parsing ScopedPDU
+Timeout: No Response from 10.226.102.101
+
+vplexDirectorFEPortOpsQueued OBJECT-TYPE   >>>>>>>> Not Implemneted 
+
+service@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.5.1.5 -v3                                                    
+SNMPv2-SMI::enterprises.1139.21.2.2.5.1.5 = No Such Instance currently exists at this OID
+
+vplexDirectorBEOpsQueued
+
+1.3.6.1.4.1.1139.21.2.2.6.1.3
+
+service@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.3 -v3                                                    
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.3 = No Such Instance currently exists at this 
+
+vplexDirectorBEOpsActive 
+
+@director-1-1-a:/etc/snmp> snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.6.1.4 -v3 
+SNMPv2-SMI::enterprises.1139.21.2.2.6.1.4 = No Such Instance currently exists at this OID
+
+
+snmpwalk -u service -A Mi@Dim7T -a SHA-256 -X Mi@Dim7T -x AES -l authPriv 10.226.81.145 1.3.6.1.4.1.1139.21.2.2.6.1.4 -v3 
+/*
+*******************
+vplexDirectorBETable    oid vplexDirectorBETable_oid[] = {1,3,6,1,4,1,1139,21,2,2,6};
+
+COLUMN_VPLEXDIRECTORBEOPSREAD               1
+COLUMN_VPLEXDIRECTORBEOPSWRITE              2
+COLUMN_VPLEXDIRECTORBEOPSQUEUED             3           N.A
+COLUMN_VPLEXDIRECTORBEOPSACTIVE             4           N.A
+COLUMN_VPLEXDIRECTORBEOPSAVGREADLATENCY     5
+COLUMN_VPLEXDIRECTORBEOPSAVGWRITELATENCY    6
+COLUMN_VPLEXDIRECTORBEBYTESREAD             7
+COLUMN_VPLEXDIRECTORBEBYTESWRITE            8
+*/
+
+static const oid DirectorBeOpsReadOID[] =           {1,3,6,1,4,1,1139,21,2,2,6,1,1};
+
+static const oid DirectorBeOpsWriteOID[] =          {1,3,6,1,4,1,1139,21,2,2,6,1,2};
+
+static const oid DirectorBeOpsAvgReadLatOID[] =     {1,3,6,1,4,1,1139,21,2,2,6,1,5};
+
+static const oid DirectorBeOpsAvgWriteLatOID[] =    {1,3,6,1,4,1,1139,21,2,2,6,1,6};
+
+static const oid DirectorBeBytesReadOID[] =         {1,3,6,1,4,1,1139,21,2,2,6,1,7};
+
+static const oid DirectorBeBytesWriteOID[] =        {1,3,6,1,4,1,1139,21,2,2,6,1,8};
+
+COLUMN_VPLEXDIRECTORBEPORTOPSREAD               3       N.A
+COLUMN_VPLEXDIRECTORBEPORTOPSWRITE              4       N.A
+COLUMN_VPLEXDIRECTORBEPORTOPSQUEUED             5       N.A
+COLUMN_VPLEXDIRECTORBEPORTOPSACTIVE             6       N.A
+COLUMN_VPLEXDIRECTORBEPORTOPSAVGREADLATENCY     7       N.A
+COLUMN_VPLEXDIRECTORBEPORTOPSAVGWRITELATENCY    8       N.A
+COLUMN_VPLEXDIRECTORBEPORTBYTESREAD             9
+COLUMN_VPLEXDIRECTORBEPORTBYTESWRITE            10
+
+*/
+
+static const oid DirectorBEPortReadStatsOID[] =     {1,3,6,1,4,1,1139,21,2,2,7,1,9};
+
+static const oid DirectorBEPortWriteStatsOID[] =    {1,3,6,1,4,1,1139,21,2,2,7,1,10};
+
+>>>>>>>>>>>>>>>
+
+
+
+
+
+
+To check why general error,
+
+tcpdump -i EC-01 -w capture.pcap "port 161" &
+
+
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1.1 -v3
+
+director-1-1-a:/etc/snmp # snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.102.101 1.3.6.1.4.1.1139.21.2.2.8.1 -v3
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.1.10.226.102.101.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = STRING: "snmp_local_test_vol"
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.1.10.226.102.102.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = STRING: "snmp_local_test_vol"
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.2.10.226.102.101.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = STRING: "VPD83T3:60001440000000106000a3ca0e8bfef2"
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.2.10.226.102.102.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = STRING: "VPD83T3:60001440000000106000a3ca0e8bfef2"
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.3.10.226.102.101.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.3.10.226.102.102.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Counter64: 2
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.4.10.226.102.101.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.4.10.226.102.102.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Counter64: 1024
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.5.10.226.102.101.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.5.10.226.102.102.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Counter64: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.6.10.226.102.101.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.6.10.226.102.102.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Gauge32: 8994
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.7.10.226.102.101.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Gauge32: 0
+SNMPv2-SMI::enterprises.1139.21.2.2.8.1.7.10.226.102.102.19.115.110.109.112.95.108.111.99.97.108.95.116.101.115.116.95.118.111.108 = Gauge32: 0
+
+
+AES/DES
+
+
+>>>>>>>>>>>
+
+VPlexcli:/> nsfw -ic "sxport showview" --directors director-*
+
+VV name 
+UUID 
+
+MAP 
+
+>>>>>>>>>>>
+
+
+snmpwalk -u service -A Mi@Dim7T -a SHA -X Mi@Dim7T -x AES -l authPriv 10.226.81.191 1.3.6.1.4.1.1139.21.2.2.1.1.3 -v3 
